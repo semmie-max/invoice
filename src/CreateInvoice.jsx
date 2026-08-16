@@ -1,9 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 
-// Bare-bones Create Invoice page.
-// Everything below is grouped by section so you can restyle/rearrange freely.
-// Swap out the plain <input>/<div> markup for your own design.
+// Shared style tokens, matching DashboardClone.jsx
+const card = "rounded-3xl border border-white/[0.06] bg-[#100c14] p-6";
+const label = "mb-1.5 block text-[12px] font-medium text-white/45";
+const input =
+  "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-[14px] text-white placeholder-white/25 outline-none transition focus:border-white/30";
+const sectionTitle = "mb-5 text-[19px] font-semibold";
 
 export default function CreateInvoice() {
   const navigate = useNavigate();
@@ -40,6 +44,9 @@ export default function CreateInvoice() {
   const taxAmount = (subtotal * taxPercent) / 100;
   const total = subtotal + taxAmount - discount;
 
+  const currencySymbol =
+    { NGN: "₦", USD: "$", EUR: "€", GBP: "£" }[invoiceMeta.currency] || "";
+
   const updateItem = (index, field, value) => {
     setItems((prev) =>
       prev.map((item, i) => (i === index ? { ...item, [field]: value } : item))
@@ -54,223 +61,358 @@ export default function CreateInvoice() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    const payload = {
+      client,
+      invoiceMeta,
+      items,
+      taxPercent,
+      discount,
+      notes,
+      terms,
+      paymentDetails,
+      subtotal,
+      taxAmount,
+      total,
+    };
     // TODO: send this payload to your backend / storage / email service
-    const payload = { client, invoiceMeta, items, taxPercent, discount, notes, terms, paymentDetails, subtotal, taxAmount, total };
     console.log("Invoice payload:", payload);
   };
 
   return (
-    <div style={{ minHeight: "100vh", padding: "40px", fontFamily: "sans-serif" }}>
-      <button onClick={() => navigate("/")}>&larr; Back to Dashboard</button>
-
-      <h1>Create Invoice</h1>
-
-      <form onSubmit={handleSubmit}>
-        {/* ---------------- Client details ---------------- */}
-        <section>
-          <h2>Client Details</h2>
-          <label>
-            Client name
-            <input
-              value={client.name}
-              onChange={(e) => setClient({ ...client, name: e.target.value })}
-            />
-          </label>
-          <label>
-            Client email
-            <input
-              type="email"
-              value={client.email}
-              onChange={(e) => setClient({ ...client, email: e.target.value })}
-            />
-          </label>
-          <label>
-            Client phone
-            <input
-              value={client.phone}
-              onChange={(e) => setClient({ ...client, phone: e.target.value })}
-            />
-          </label>
-          <label>
-            Client address
-            <textarea
-              value={client.address}
-              onChange={(e) => setClient({ ...client, address: e.target.value })}
-            />
-          </label>
-        </section>
-
-        {/* ---------------- Invoice meta ---------------- */}
-        <section>
-          <h2>Invoice Details</h2>
-          <label>
-            Invoice number
-            <input
-              value={invoiceMeta.invoiceNumber}
-              onChange={(e) =>
-                setInvoiceMeta({ ...invoiceMeta, invoiceNumber: e.target.value })
-              }
-            />
-          </label>
-          <label>
-            Issue date
-            <input
-              type="date"
-              value={invoiceMeta.issueDate}
-              onChange={(e) =>
-                setInvoiceMeta({ ...invoiceMeta, issueDate: e.target.value })
-              }
-            />
-          </label>
-          <label>
-            Due date
-            <input
-              type="date"
-              value={invoiceMeta.dueDate}
-              onChange={(e) =>
-                setInvoiceMeta({ ...invoiceMeta, dueDate: e.target.value })
-              }
-            />
-          </label>
-          <label>
-            Currency
-            <select
-              value={invoiceMeta.currency}
-              onChange={(e) =>
-                setInvoiceMeta({ ...invoiceMeta, currency: e.target.value })
-              }
-            >
-              <option value="NGN">NGN (₦)</option>
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-              <option value="GBP">GBP (£)</option>
-            </select>
-          </label>
-        </section>
-
-        {/* ---------------- Line items ---------------- */}
-        <section>
-          <h2>Items</h2>
-          {items.map((item, index) => (
-            <div key={index}>
-              <label>
-                Description
-                <input
-                  value={item.description}
-                  onChange={(e) => updateItem(index, "description", e.target.value)}
-                />
-              </label>
-              <label>
-                Quantity
-                <input
-                  type="number"
-                  min="0"
-                  value={item.quantity}
-                  onChange={(e) => updateItem(index, "quantity", Number(e.target.value))}
-                />
-              </label>
-              <label>
-                Rate
-                <input
-                  type="number"
-                  min="0"
-                  value={item.rate}
-                  onChange={(e) => updateItem(index, "rate", Number(e.target.value))}
-                />
-              </label>
-              <span>Amount: {(item.quantity * item.rate).toLocaleString()}</span>
-              {items.length > 1 && (
-                <button type="button" onClick={() => removeItem(index)}>
-                  Remove
-                </button>
-              )}
-            </div>
-          ))}
-          <button type="button" onClick={addItem}>
-            + Add item
+    <div
+      className="min-h-screen w-full overflow-y-auto text-white"
+      style={{ background: "#08080a", fontFamily: "'Inter', ui-sans-serif, system-ui, sans-serif" }}
+    >
+      <div className="mx-auto max-w-[880px] px-6 py-8 sm:px-8">
+        {/* header */}
+        <div className="mb-8 flex items-center gap-4">
+          <button
+            onClick={() => navigate("/")}
+            className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-white/10 text-white/60 transition hover:text-white"
+          >
+            <ArrowLeft size={16} />
           </button>
-        </section>
-
-        {/* ---------------- Tax / discount / totals ---------------- */}
-        <section>
-          <h2>Totals</h2>
-          <label>
-            Tax (%)
-            <input
-              type="number"
-              min="0"
-              value={taxPercent}
-              onChange={(e) => setTaxPercent(Number(e.target.value))}
-            />
-          </label>
-          <label>
-            Discount (flat amount)
-            <input
-              type="number"
-              min="0"
-              value={discount}
-              onChange={(e) => setDiscount(Number(e.target.value))}
-            />
-          </label>
-          <div>Subtotal: {subtotal.toLocaleString()}</div>
-          <div>Tax amount: {taxAmount.toLocaleString()}</div>
           <div>
-            <strong>Total: {total.toLocaleString()}</strong>
+            <h1 className="text-[26px] font-semibold tracking-tight">Create Invoice</h1>
+            <p className="mt-0.5 text-[13px] text-white/40">
+              Fill in the details below and send it off to your client.
+            </p>
           </div>
-        </section>
+        </div>
 
-        {/* ---------------- Payment details ---------------- */}
-        <section>
-          <h2>Payment Details</h2>
-          <label>
-            Bank name
-            <input
-              value={paymentDetails.bankName}
-              onChange={(e) =>
-                setPaymentDetails({ ...paymentDetails, bankName: e.target.value })
-              }
-            />
-          </label>
-          <label>
-            Account name
-            <input
-              value={paymentDetails.accountName}
-              onChange={(e) =>
-                setPaymentDetails({ ...paymentDetails, accountName: e.target.value })
-              }
-            />
-          </label>
-          <label>
-            Account number
-            <input
-              value={paymentDetails.accountNumber}
-              onChange={(e) =>
-                setPaymentDetails({ ...paymentDetails, accountNumber: e.target.value })
-              }
-            />
-          </label>
-        </section>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* ---------------- Client details ---------------- */}
+          <section className={card}>
+            <h2 className={sectionTitle}>Client Details</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className={label}>Client name</label>
+                <input
+                  className={input}
+                  placeholder="Adaeze & Co."
+                  value={client.name}
+                  onChange={(e) => setClient({ ...client, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className={label}>Client email</label>
+                <input
+                  type="email"
+                  className={input}
+                  placeholder="client@email.com"
+                  value={client.email}
+                  onChange={(e) => setClient({ ...client, email: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className={label}>Client phone</label>
+                <input
+                  className={input}
+                  placeholder="+234..."
+                  value={client.phone}
+                  onChange={(e) => setClient({ ...client, phone: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className={label}>Client address</label>
+                <input
+                  className={input}
+                  placeholder="Street, city, state"
+                  value={client.address}
+                  onChange={(e) => setClient({ ...client, address: e.target.value })}
+                />
+              </div>
+            </div>
+          </section>
 
-        {/* ---------------- Notes / terms ---------------- */}
-        <section>
-          <h2>Notes & Terms</h2>
-          <label>
-            Notes (visible to client)
-            <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
-          </label>
-          <label>
-            Terms & conditions
-            <textarea value={terms} onChange={(e) => setTerms(e.target.value)} />
-          </label>
-        </section>
+          {/* ---------------- Invoice meta ---------------- */}
+          <section className={card}>
+            <h2 className={sectionTitle}>Invoice Details</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div>
+                <label className={label}>Invoice number</label>
+                <input
+                  className={input}
+                  placeholder="INV-0001"
+                  value={invoiceMeta.invoiceNumber}
+                  onChange={(e) =>
+                    setInvoiceMeta({ ...invoiceMeta, invoiceNumber: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className={label}>Issue date</label>
+                <input
+                  type="date"
+                  className={`${input} [color-scheme:dark]`}
+                  value={invoiceMeta.issueDate}
+                  onChange={(e) =>
+                    setInvoiceMeta({ ...invoiceMeta, issueDate: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className={label}>Due date</label>
+                <input
+                  type="date"
+                  className={`${input} [color-scheme:dark]`}
+                  value={invoiceMeta.dueDate}
+                  onChange={(e) =>
+                    setInvoiceMeta({ ...invoiceMeta, dueDate: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className={label}>Currency</label>
+                <select
+                  className={`${input} [color-scheme:dark]`}
+                  value={invoiceMeta.currency}
+                  onChange={(e) =>
+                    setInvoiceMeta({ ...invoiceMeta, currency: e.target.value })
+                  }
+                >
+                  <option value="NGN">NGN (₦)</option>
+                  <option value="USD">USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                </select>
+              </div>
+            </div>
+          </section>
 
-        {/* ---------------- Actions ---------------- */}
-        <section>
-          <button type="button">Save as Draft</button>
-          <button type="submit">Send Invoice</button>
-          <button type="button">Preview</button>
-        </section>
-      </form>
+          {/* ---------------- Line items ---------------- */}
+          <section className={card}>
+            <div className="mb-5 flex items-center justify-between">
+              <h2 className="text-[19px] font-semibold">Items</h2>
+              <button
+                type="button"
+                onClick={addItem}
+                className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-white to-white/80 px-4 py-2 text-[12px] font-medium text-black"
+              >
+                <Plus size={14} /> Add item
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {items.map((item, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-1 items-end gap-3 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 sm:grid-cols-[1fr_90px_120px_120px_36px]"
+                >
+                  <div>
+                    <label className={label}>Description</label>
+                    <input
+                      className={input}
+                      placeholder="Website design & build"
+                      value={item.description}
+                      onChange={(e) => updateItem(index, "description", e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className={label}>Qty</label>
+                    <input
+                      type="number"
+                      min="0"
+                      className={input}
+                      value={item.quantity}
+                      onChange={(e) => updateItem(index, "quantity", Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <label className={label}>Rate</label>
+                    <input
+                      type="number"
+                      min="0"
+                      className={input}
+                      value={item.rate}
+                      onChange={(e) => updateItem(index, "rate", Number(e.target.value))}
+                    />
+                  </div>
+                  <div>
+                    <label className={label}>Amount</label>
+                    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5 text-[14px] font-medium tabular-nums text-white/80">
+                      {currencySymbol}
+                      {(item.quantity * item.rate).toLocaleString()}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(index)}
+                    disabled={items.length === 1}
+                    className="grid h-10 w-10 place-items-center rounded-xl border border-white/10 text-white/40 transition hover:text-rose-400 disabled:opacity-30"
+                  >
+                    <Trash2 size={15} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* ---------------- Totals ---------------- */}
+          <section className={card}>
+            <h2 className={sectionTitle}>Totals</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <label className={label}>Tax (%)</label>
+                <input
+                  type="number"
+                  min="0"
+                  className={input}
+                  value={taxPercent}
+                  onChange={(e) => setTaxPercent(Number(e.target.value))}
+                />
+              </div>
+              <div>
+                <label className={label}>Discount (flat amount)</label>
+                <input
+                  type="number"
+                  min="0"
+                  className={input}
+                  value={discount}
+                  onChange={(e) => setDiscount(Number(e.target.value))}
+                />
+              </div>
+            </div>
+
+            <div className="mt-5 space-y-2 border-t border-white/[0.06] pt-5">
+              <div className="flex justify-between text-[13px] text-white/50">
+                <span>Subtotal</span>
+                <span className="tabular-nums text-white/80">
+                  {currencySymbol}
+                  {subtotal.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-[13px] text-white/50">
+                <span>Tax</span>
+                <span className="tabular-nums text-white/80">
+                  {currencySymbol}
+                  {taxAmount.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-[13px] text-white/50">
+                <span>Discount</span>
+                <span className="tabular-nums text-white/80">
+                  -{currencySymbol}
+                  {discount.toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between border-t border-white/[0.06] pt-3 text-[16px] font-semibold">
+                <span>Total</span>
+                <span className="tabular-nums">
+                  {currencySymbol}
+                  {total.toLocaleString()}
+                </span>
+              </div>
+            </div>
+          </section>
+
+          {/* ---------------- Payment details ---------------- */}
+          <section className={card}>
+            <h2 className={sectionTitle}>Payment Details</h2>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <div>
+                <label className={label}>Bank name</label>
+                <input
+                  className={input}
+                  value={paymentDetails.bankName}
+                  onChange={(e) =>
+                    setPaymentDetails({ ...paymentDetails, bankName: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className={label}>Account name</label>
+                <input
+                  className={input}
+                  value={paymentDetails.accountName}
+                  onChange={(e) =>
+                    setPaymentDetails({ ...paymentDetails, accountName: e.target.value })
+                  }
+                />
+              </div>
+              <div>
+                <label className={label}>Account number</label>
+                <input
+                  className={input}
+                  value={paymentDetails.accountNumber}
+                  onChange={(e) =>
+                    setPaymentDetails({ ...paymentDetails, accountNumber: e.target.value })
+                  }
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* ---------------- Notes / terms ---------------- */}
+          <section className={card}>
+            <h2 className={sectionTitle}>Notes & Terms</h2>
+            <div className="space-y-4">
+              <div>
+                <label className={label}>Notes (visible to client)</label>
+                <textarea
+                  rows={3}
+                  className={`${input} resize-none`}
+                  placeholder="Thank you for your business!"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className={label}>Terms & conditions</label>
+                <textarea
+                  rows={3}
+                  className={`${input} resize-none`}
+                  placeholder="Payment due within 7 days..."
+                  value={terms}
+                  onChange={(e) => setTerms(e.target.value)}
+                />
+              </div>
+            </div>
+          </section>
+
+          {/* ---------------- Actions ---------------- */}
+          <div className="flex flex-wrap justify-end gap-3 pb-8">
+            <button
+              type="button"
+              className="rounded-full border border-white/10 px-5 py-2.5 text-[13px] font-medium text-white/70 transition hover:text-white"
+            >
+              Preview
+            </button>
+            <button
+              type="button"
+              className="rounded-full border border-white/10 px-5 py-2.5 text-[13px] font-medium text-white/70 transition hover:text-white"
+            >
+              Save as Draft
+            </button>
+            <button
+              type="submit"
+              className="rounded-full bg-gradient-to-r from-white to-white/80 px-6 py-2.5 text-[13px] font-medium text-black"
+            >
+              Send Invoice
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
