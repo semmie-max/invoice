@@ -31,7 +31,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useNavigate } from "react-router-dom";
-
+import { enablePushNotifications } from './pushNotifications';
 // ---------------- mock data (matches the mockup) ----------------
 
 const nav = [
@@ -217,9 +217,12 @@ const [activeIndex, setActiveIndex] = useState(5);
               <p className="mt-1 text-[13px] text-white/40">Work hard, bill smart, get paid.</p>
             </div>
             <div className="flex items-center gap-3">
-              <button className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-white/60 hover:text-white">
-                <Bell size={16} />
-              </button>
+              <button
+  onClick={() => enablePushNotifications()}
+  className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-white/60 hover:text-white"
+>
+  <Bell size={16} />
+</button>
               <button className="grid h-10 w-10 place-items-center rounded-full border border-white/10 text-white/60 hover:text-white">
                 <Settings2 size={16} />
               </button>
