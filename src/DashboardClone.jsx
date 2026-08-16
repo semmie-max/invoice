@@ -536,8 +536,7 @@ const [activeIndex, setActiveIndex] = useState(5);
                   <span
                     className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${
                       pctChange >= 0 ? "text-emerald-400 bg-emerald-400/10" : "text-rose-400 bg-rose-400/10"
-                    }`}
-                  >
+                    }`}                  >
                     {pctChange >= 0 ? "+" : ""}
                     {pctChange}%
                   </span>
