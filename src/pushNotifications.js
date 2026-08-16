@@ -1,4 +1,4 @@
-const BACKEND_URL = "http://localhost:4000";
+const BACKEND_URL = "https://invoice-k8z7.onrender.com";
 
 function urlBase64ToUint8Array(base64String) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
