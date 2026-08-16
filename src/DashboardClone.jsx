@@ -321,7 +321,7 @@ const [activeIndex, setActiveIndex] = useState(5);
   </div>
 </div>
 <div className="relative text-[34px] font-semibold tracking-tight"> 
-  {showBalance ? "$ 1,000.11" : "$ ••••••"} 
+  {showBalance ? "₦ 1,000.11" : "₦ ••••••"} 
 </div>
 </div>
 
