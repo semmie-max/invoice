@@ -19,6 +19,8 @@ import {
   DollarSign,
   Wallet,
   Pencil,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import {
   AreaChart,
@@ -112,9 +114,10 @@ const ranges = ["1D", "1W", "1M", "6M", "1Y"];
 
 export default function DashboardClone() {
   const [tab, setTab] = useState("Market");
-  const [watchFilter, setWatchFilter] = useState("Most Viewed");
-  const [range, setRange] = useState("1Y");
-  const [activeIndex, setActiveIndex] = useState(5); // Jun, default highlighted point
+const [watchFilter, setWatchFilter] = useState("Most Viewed");
+const [range, setRange] = useState("1Y");
+const [activeIndex, setActiveIndex] = useState(5);
+  const [showBalance, setShowBalance] = useState(true);
 
   const [nowPlaying, setNowPlaying] = useState(null);
 
@@ -263,13 +266,62 @@ export default function DashboardClone() {
                   style={{ background: "radial-gradient(circle, #ffffff, transparent 70%)" }}
                 />
                 <div className="relative mb-8 flex items-center justify-between">
-                  <span className="text-[15px] text-white/60">My Haul</span>
-                  <button className="flex items-center gap-1 rounded-full border border-white/10 px-3 py-1.5 text-xs text-white/60">
-                    6M <ChevronDown size={12} />
-                  </button>
-                </div>
-                <div className="relative text-[34px] font-semibold tracking-tight">$ 1,000.11</div>
-              </div>
+  <span className="text-[15px] text-white/60">My Haul</span>
+
+  <div className="flex items-center gap-2">
+    {/* Eye toggle */}
+    <button
+      onClick={() => setShowBalance(!showBalance)}
+      className="grid h-8 w-8 place-items-center rounded-full border border-white/10 text-white/50 transition hover:bg-white/5 hover:text-white"
+      aria-label={showBalance ? "Hide balance" : "Show balance"}
+    >
+      {showBalance ? (
+        /* Eye open */
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="17"
+          height="17"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+          <circle cx="12" cy="12" r="2.5" />
+        </svg>
+      ) : (
+        /* Eye closed */
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="17"
+          height="17"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M3 3l18 18" />
+          <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+          <path d="M9.9 4.2A10.8 10.8 0 0 1 12 4c6 0 9.5 6 9.5 6a17 17 0 0 1-3.2 3.8" />
+          <path d="M6.2 6.2C3.8 7.8 2.5 10 2.5 10s3.5 6 9.5 6c1.3 0 2.5-.3 3.6-.7" />
+        </svg>
+      )}
+    </button>
+
+    {/* Time period */}
+    <button className="flex items-center gap-1 rounded-full border border-white/10 px-3 py-1.5 text-xs text-white/60">
+      6M <ChevronDown size={12} />
+    </button>
+  </div>
+</div>
+<div className="relative text-[34px] font-semibold tracking-tight"> 
+  {showBalance ? "$ 1,000.11" : "$ ••••••"} 
+</div>
+</div>
 
               <div className="relative overflow-hidden rounded-3xl border border-white/[0.06] bg-[#100c14] px-6 py-8 text-center">
                 <div
