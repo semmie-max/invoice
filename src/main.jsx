@@ -6,8 +6,8 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <BrowserRouter basename="/invoice/">
+    <Router>
       <App />
-    </BrowserRouter>
+    </Router>
   </StrictMode>,
 )
