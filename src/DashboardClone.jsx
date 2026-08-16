@@ -30,6 +30,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import { useNavigate } from "react-router-dom";
 
 // ---------------- mock data (matches the mockup) ----------------
 
@@ -43,7 +44,7 @@ const nav = [
 
 const watchlist = [
   {
-  logo: "./spotify.png",
+  logo: `${import.meta.env.BASE_URL}spotify.png`,
   name: "Spotify",
   ticker: "Audio Streaming",
   price: "$1,770.3",
@@ -118,6 +119,7 @@ const [watchFilter, setWatchFilter] = useState("Most Viewed");
 const [range, setRange] = useState("1Y");
 const [activeIndex, setActiveIndex] = useState(5);
   const [showBalance, setShowBalance] = useState(true);
+  const navigate = useNavigate();
 
   const [nowPlaying, setNowPlaying] = useState(null);
 
@@ -222,7 +224,7 @@ const [activeIndex, setActiveIndex] = useState(5);
                 <Settings2 size={16} />
               </button>
               <div className="flex items-center gap-2.5 pl-1">
-                <img src="./avatar.jpg" alt="Profile" className="h-10 w-10 rounded-full object-cover" />
+                <img src={`${import.meta.env.BASE_URL}avatar.jpg`} alt="Profile" className="h-10 w-10 rounded-full object-cover" />
                 <div className="hidden sm:block">
                   <div className="text-[13px] font-medium leading-tight">remomhe.</div>
                   <div className="text-[11px] leading-tight text-white/40">aremomheremy@gmail.com</div>
@@ -332,9 +334,12 @@ const [activeIndex, setActiveIndex] = useState(5);
                 <p className="relative mx-auto mt-2 max-w-[240px] text-[13px] leading-relaxed text-white/45">
                   You are doing the work. Now send the bill. Let the payment roll in.
                 </p>
-                <button className="relative mt-5 rounded-full bg-gradient-to-r from-white to-white/80 px-6 py-2.5 text-[13px] font-medium text-black">
-                  Create Invoice
-                </button>
+                <button
+  onClick={() => navigate("/create-invoice")}
+  className="relative mt-5 rounded-full bg-gradient-to-r from-white to-white/80 px-6 py-2.5 text-[13px] font-medium text-black"
+>
+  Create Invoice
+</button>
               </div>
             </div>
 
