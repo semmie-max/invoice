@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Briefcase,
@@ -13,11 +13,8 @@ import {
   ChevronDown,
   ChevronRight,
   BookOpen,
-  Music,
   ShoppingBag,
-  Grid2x2,
   Cpu,
-  Apple,
   CloudSun,
   DollarSign,
   Wallet,
@@ -74,9 +71,6 @@ const watchlist = [
   color: "#A78BFA",
 },
 ];
-const portfolioData = {
-  cashBalance: 4280.50,
-};
 
 const holdings = [
   {
