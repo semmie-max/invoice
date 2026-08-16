@@ -41,7 +41,7 @@ const nav = [
 
 const watchlist = [
   {
-  logo: "/spotify.png",
+  logo: "./spotify.png",
   name: "Spotify",
   ticker: "Audio Streaming",
   price: "$1,770.3",
@@ -219,7 +219,7 @@ export default function DashboardClone() {
                 <Settings2 size={16} />
               </button>
               <div className="flex items-center gap-2.5 pl-1">
-                <img src="/avatar.jpg" alt="Profile" className="h-10 w-10 rounded-full object-cover" />
+                <img src="./avatar.jpg" alt="Profile" className="h-10 w-10 rounded-full object-cover" />
                 <div className="hidden sm:block">
                   <div className="text-[13px] font-medium leading-tight">remomhe.</div>
                   <div className="text-[11px] leading-tight text-white/40">aremomheremy@gmail.com</div>
