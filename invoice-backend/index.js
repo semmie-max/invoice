@@ -60,7 +60,7 @@ app.post("/api/subscribe", (req, res) => {
 });
 
 // send your VAPID public key to the frontend so it can subscribe
-app.get("/api/vapid-public-key", (req, res) => {
+app.get("/api/BDVFl8ojxjktbP1BDkFegGBwzn63XF5AhTAlHT1O7bu45ofdkjbowVaHm5diFHH8N6hy_vO-rEkDpaJXAZAKmcM", (req, res) => {
   res.send(process.env.VAPID_PUBLIC_KEY);
 });
 
@@ -85,7 +85,7 @@ app.post("/api/mono-webhook", async (req, res) => {
     ).run(type, amount, narration);
 
     await broadcastNotification({
-      title: type === "credit" ? "Money In 💰" : "Money Out 💸",
+      title: type === "credit" ? "Money In ..." : "Money Out ...",
       body: `${narration || ""} — ₦${amount?.toLocaleString?.() || amount}`,
     });
   }

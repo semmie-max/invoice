@@ -51,12 +51,9 @@ const watchlist = [
   pct: "+6.32%",
   color: "#1DB954",
 },
-  {
+    {
   icon: CloudSun,
   name: "Weather",
-  ticker: "Today · Ado Ekiti",
-  price: "28°C",
-  pct: "72% Humidity",
   color: "#60A5FA",
 },
   {
@@ -85,7 +82,6 @@ const holdings = [
   {
   icon: ShoppingBag,
   ticker: "Unrealized P&L",
-  units: 12,
   value: "$12.31",
   change: "+0.70%"
 },
@@ -98,7 +94,6 @@ const holdings = [
   {
   icon: Cpu,
   ticker: "Total Return",
-  units: 16,
   value: "$1,721.30",
   change: "+12.31 (0.7%)"
 },
@@ -122,6 +117,8 @@ const [activeIndex, setActiveIndex] = useState(5);
   const navigate = useNavigate();
 
   const [nowPlaying, setNowPlaying] = useState(null);
+    const [nowPlaying, setNowPlaying] = useState(null);
+  const [weather, setWeather] = useState(null);
 
   useEffect(() => {
     const LASTFM_API_KEY = "248965a0017aa3f8ee2ab5f4440785e8";
@@ -149,6 +146,33 @@ const [activeIndex, setActiveIndex] = useState(5);
 
     fetchNowPlaying();
     const interval = setInterval(fetchNowPlaying, 20000);
+    return () => clearInterval(interval);
+  }, []);
+
+    useEffect(() => {
+    const LAT = 7.6216; // Ado-Ekiti
+    const LON = 5.2216;
+
+    async function fetchWeather() {
+      try {
+        const res = await fetch(
+          `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,relative_humidity_2m`
+        );
+        const data = await res.json();
+        const c = data?.current;
+        if (c) {
+          setWeather({
+            temp: Math.round(c.temperature_2m),
+            humidity: c.relative_humidity_2m,
+          });
+        }
+      } catch (err) {
+        console.error("Weather fetch failed:", err);
+      }
+    }
+
+    fetchWeather();
+    const interval = setInterval(fetchWeather, 600000);
     return () => clearInterval(interval);
   }, []);
   
@@ -367,6 +391,7 @@ const [activeIndex, setActiveIndex] = useState(5);
               <div className="space-y-1">
                 {watchlist.map((s) => {
                   const isSpotify = s.name === "Spotify";
+                  const isWeather = s.name === "Weather";
                   return (
                   <div key={s.name} className="flex items-center justify-between rounded-xl px-1.5 py-3 hover:bg-white/[0.03]">
                     <div className="flex items-center gap-3">
@@ -385,12 +410,14 @@ const [activeIndex, setActiveIndex] = useState(5);
     {isSpotify ? (nowPlaying?.name || "Loading…") : s.name}
   </div>
 
-  <div className="text-[11px] text-white/35">
+    <div className="text-[11px] text-white/35">
     {isSpotify
       ? (nowPlaying?.artist || "Spotify")
-      : s.name === "Learnin’"
-        ? s.course
-        : s.ticker}
+      : isWeather
+        ? "Today · Ado Ekiti"
+        : s.name === "Learnin’"
+          ? s.course
+          : s.ticker}
   </div>
 
   {s.name === "Learnin’" && (
@@ -401,10 +428,19 @@ const [activeIndex, setActiveIndex] = useState(5);
 </div>
                     </div>
                     <div className="text-right">
-                      {isSpotify ? (
+                                            {isSpotify ? (
                         <div className="text-[11px] font-medium text-emerald-400">
                           {nowPlaying ? (nowPlaying.playing ? "● Sound Check" : "Last played") : ""}
                         </div>
+                      ) : isWeather ? (
+                        <>
+                          <div className="text-[14px] font-medium tabular-nums">
+                            {weather ? `${weather.temp}°C` : "…"}
+                          </div>
+                          <div className="text-[11px] font-medium text-blue-400">
+                            {weather ? `${weather.humidity}% Humidity` : ""}
+                          </div>
+                        </>
                       ) : (
                         <>
                           <div className="text-[14px] font-medium tabular-nums">{s.price}</div>
